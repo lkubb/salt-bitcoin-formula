@@ -1,0 +1,36 @@
+{%- macro render_opt(name, val) %}
+{%-   if val | is_list %}
+{%-     for v in val %}
+{{- render_opt(name, v) }}
+{%-     endfor -%}
+{%   else %}
+{{- name }}={{ val }}
+{%   endif %}
+{%- endmacro %}
+
+{%- set scopes = ['main', 'test', 'signet', 'regtest'] -%}
+
+# Bitcoin configuration file managed by Salt.
+# Manual changes might be overwritten.
+
+# See https://github.com/bitcoin/bitcoin/blob/master/share/examples/bitcoin.conf
+
+{% for name, val in btc.config.items() %}
+{%-   if val is not mapping %}
+
+{{- render_opt(name, val) }}
+{%-   endif %}
+{%- endfor %}
+
+# These settings are for specific scopes:
+# mainnet, testnet, signet and regtest
+
+{%- for scope in scopes %}
+{%-   if btc.config[scope] is defined %}
+
+[{{ scope }}]
+{%-     for name, val in btc.config[scope].items() %}
+{{ render_opt(name, val) }}
+{%-     endfor %}
+{%-   endif %}
+{%- endfor %}
