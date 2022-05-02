@@ -69,7 +69,11 @@ ReadOnlyPaths={{ btc.lookup.paths.conf }}
 
 # /var/lib/bitcoind
 StateDirectory=bitcoind
+{%-   if btc.config.get('sysperms') | to_bool and btc.config.get('disablewallet') | to_bool %}
+StateDirectoryMode=0755
+{%-   else %}
 StateDirectoryMode=0710
+{%-   endif %}
 {%- else %}
 {%-   do rw.append(btc.lookup.paths.data) %}
 {%- endif %}

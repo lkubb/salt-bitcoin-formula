@@ -37,6 +37,9 @@ Bitcoin paths are setup:
       - {{ btc.lookup.paths.conf }}
       - {{ btc.lookup.paths.data }}:
         - user: {{ btc.lookup.user }}
+{%- if btc.config.get('sysperms') | to_bool and btc.config.get('disablewallet') | to_bool %}
+        - mode: '0755'
+{%- endif %}
     - user: root
     - group: {{ btc.lookup.group }}
     - mode: '0710'
