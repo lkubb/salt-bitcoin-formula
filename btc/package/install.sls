@@ -52,34 +52,12 @@ Trusted GPG keys are present:
     - keys:
 {%- for trusted in btc.trust %}
 {%-   if trusted in btc.lookup.gpg.key_mapping %}
-      - {{ btc.lookup.gpg.key_mapping[trusted] }}
+      - {{ btc.lookup.gpg.key_mapping[trusted][:-16] }}
 {%-   else %}
-      - {{ trusted }}
+      - {{ trusted[:-16] }}
 {%-   endif %}
 {%- endfor %}
     - keyserver: {{ btc.lookup.gpg.keyserver }}
-
-# This is needed to reliably verify the file since the
-# gpg.verify execution module returns true if none of
-# the signing keys can be found. gpg.present returns
-# true, even if the import fails because the pubkey has
-# no associated user ID. This is also really
-# dumb because Salt would accept any file signed with
-# only unknown keys. @TODO write execution module
-
-{%- for trusted in btc.trust %}
-
-Trusted key '{{ trusted }}' is actually present:
-  module.run:
-    - gpg.get_key:
-{%-   if trusted in btc.lookup.gpg.key_mapping %}
-        - fingerprint: {{ btc.lookup.gpg.key_mapping[trusted] }}
-{%-   else %}
-        - fingerprint: {{ trusted }}
-{%-   endif %}
-    - require_in:
-      - Bitcoin hashes are verified
-{%- endfor %}
 
 Bitcoin release hashes and signature are available:
   file.managed:
@@ -90,14 +68,56 @@ Bitcoin release hashes and signature are available:
         - source: {{ btc.lookup.pkg.source_hash_sig.format(version=btc.version) }}
     - skip_verify: true
 
-Bitcoin release hashes are verified:
+{%- if "gpg.verified" not in salt %}
+
+# Ensure the following does not run without the key being present.
+# The official gpg modules are currently big liars and always report
+# `Yup, no worries! Everything is fine.`
+
+{%-   for trusted in btc.trust %}
+
+
+Trusted key '{{ trusted }}' is actually present:
   module.run:
-    - gpg.verify:
-      - filename: /tmp/btc-{{ btc.version }}-hashes
-      - signature: /tmp/btc-{{ btc.version }}-hashes.asc
+    - gpg.get_key:
+{%-     if trusted in btc.lookup.gpg.key_mapping %}
+        - fingerprint: {{ btc.lookup.gpg.key_mapping[trusted] }}
+{%-     else %}
+        - fingerprint: {{ trusted }}
+{%-     endif %}
+    - require_in:
+      - Bitcoin release hashes are verified
+{%-   endfor %}
+
+Bitcoin release hashes are verified:
+  test.configurable_test_state:
+    - name: Check if the downloaded web vault archive has been signed by the author.
+    - changes: False
+    - result: >
+        __slot__:salt:gpg.verify(filename=/tmp/btc-{{ btc.version }}-hashes,
+        signature=/tmp/btc-{{ btc.version }}-hashes.asc).res
     - require:
       - Bitcoin release hashes and signature are available
       - Trusted GPG keys are present
+
+{%- else %}
+
+Bitcoin release hashes are verified:
+  gpg.verified:
+    - name: /tmp/btc-{{ btc.version }}-hashes
+    - signature: /tmp/btc-{{ btc.version }}-hashes.asc
+    - signed_by_any:
+{%-   for trusted in btc.trust %}
+{%-     if trusted in btc.lookup.gpg.key_mapping %}
+        - {{ btc.lookup.gpg.key_mapping[trusted] }}
+{%-     else %}
+        - {{ trusted }}
+{%-     endif %}
+{%-   endfor %}
+    - require:
+      - Bitcoin release hashes and signature are available
+      - Trusted GPG keys are present
+{%- endif %}
 
 Bitcoin hashes are absent if verification failed:
   file.absent:
