@@ -68,7 +68,7 @@ Bitcoin release hashes and signature are available:
         - source: {{ btc.lookup.pkg.source_hash_sig.format(version=btc.version) }}
     - skip_verify: true
 
-{%- if "gpg.verified" not in salt %}
+{%- if "gpg" not in salt["saltutil.list_extmods"]().get("states", []) %}
 
 # Ensure the following does not run without the key being present.
 # The official gpg modules are currently big liars and always report
