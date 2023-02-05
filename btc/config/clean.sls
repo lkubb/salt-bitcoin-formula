@@ -1,5 +1,9 @@
-# -*- coding: utf-8 -*-
 # vim: ft=sls
+
+{#-
+    Removes the Bitcoin Core configuration and has a
+    dependency on `btc.service.clean`_.
+#}
 
 {%- set tplroot = tpldir.split('/')[0] %}
 {%- set sls_service_clean = tplroot ~ '.service.clean' %}
@@ -8,7 +12,7 @@
 include:
   - {{ sls_service_clean }}
 
-btc-config-clean-file-absent:
+btc configuration is absent:
   file.absent:
     - name: {{ btc.lookup.paths.conf | path_join('bitcoin.conf') }}
     - require:

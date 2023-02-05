@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # vim: ft=sls
 
 {%- set tplroot = tpldir.split('/')[0] %}
@@ -9,17 +8,17 @@
 include:
   - {{ sls_package_install }}
 
-btc-config-file-file-managed:
+Bitcoin Core configuration is managed:
   file.managed:
     - name: {{ btc.lookup.paths.conf | path_join('bitcoin.conf') }}
-    - source: {{ files_switch(['bitcoin.conf.j2'],
-                              lookup='btc-config-file-file-managed'
-                 )
-              }}
+    - source: {{ files_switch(["bitcoin.conf", "bitcoin.conf.j2"],
+                              lookup="Bitcoin Core configuration is managed"
+                  )
+               }}
     - mode: '0640'
     - user: root
     - group: {{ btc.lookup.group }}
-    - makedirs: True
+    - makedirs: true
     - template: jinja
     - require:
       - sls: {{ sls_package_install }}

@@ -1,5 +1,9 @@
-# -*- coding: utf-8 -*-
 # vim: ft=sls
+
+{#-
+    Removes Bitcoin Core and has a dependency on
+    `btc.config.clean`_.
+#}
 
 {%- set tplroot = tpldir.split('/')[0] %}
 {%- set sls_config_clean = tplroot ~ '.config.clean' %}
@@ -8,7 +12,8 @@
 include:
   - {{ sls_config_clean }}
 
-# This currently does not remove the data directory to prevent.
+# This currently does not remove the data directory to prevent
+# accidental data loss.
 Bitcoin paths are absent:
   file.absent:
     - names:

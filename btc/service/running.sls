@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # vim: ft=sls
 
 {%- set tplroot = tpldir.split('/')[0] %}
@@ -8,7 +7,7 @@
 include:
   - {{ sls_config_file }}
 
-btc-service-running-service-running:
+Bitcoin Core is running:
   service.running:
     - name: {{ btc.lookup.service.name }}
     - enable: True

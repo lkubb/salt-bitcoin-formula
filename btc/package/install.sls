@@ -76,7 +76,6 @@ Bitcoin release hashes and signature are available:
 
 {%-   for trusted in btc.trust %}
 
-
 Trusted key '{{ trusted }}' is actually present:
   module.run:
     - gpg.get_key:
