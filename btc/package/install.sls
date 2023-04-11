@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # vim: ft=sls
 
-{%- set tplroot = tpldir.split('/')[0] %}
+{%- set tplroot = tpldir.split("/")[0] %}
 {%- from tplroot ~ "/map.jinja" import mapdata as btc with context %}
 {%- from tplroot ~ "/libtofs.jinja" import files_switch with context %}
 
@@ -37,7 +36,7 @@ Bitcoin paths are setup:
       - {{ btc.lookup.paths.conf }}
       - {{ btc.lookup.paths.data }}:
         - user: {{ btc.lookup.user }}
-{%- if btc.config.get('sysperms') | to_bool and btc.config.get('disablewallet') | to_bool %}
+{%- if btc.config.get("sysperms") | to_bool and btc.config.get("disablewallet") | to_bool %}
         - mode: '0755'
 {%- endif %}
     - user: root
@@ -145,18 +144,18 @@ Bitcoin service unit is available:
   file.managed:
     - name: {{ btc.lookup.service.unit.format(name=btc.lookup.service.name) }}
     - source: {{ files_switch(
-                    ['bitcoind.service.j2'],
-                    lookup='Bitcoin service unit is available',
+                    ["bitcoind.service.j2"],
+                    lookup="Bitcoin service unit is available",
                   ) }}
     - template: jinja
     - mode: '0644'
     - user: root
     - group: {{ btc.lookup.rootgroup }}
     - makedirs: true
-    - context: {{ {'btc': btc} | json }}
+    - context: {{ {"btc": btc} | json }}
     - require:
       - Bitcoin is installed
-{%- if 'systemctl' | which %}
+{%- if "systemctl" | which %}
   # this executes systemctl daemon-reload
   module.run:
     - service.systemctl_reload: []

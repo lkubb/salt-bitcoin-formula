@@ -144,5 +144,5 @@ btc:
       # The entries under `source_files` are prepended to the default source files
       # given for the state
     source_files:
-      btc-config-file-file-managed:
+      Bitcoin Core configuration is managed:
         - 'bitcoin_alt.conf.j2'
