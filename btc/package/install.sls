@@ -51,9 +51,9 @@ Trusted GPG keys are present:
     - keys:
 {%- for trusted in btc.trust %}
 {%-   if trusted in btc.lookup.gpg.key_mapping %}
-      - {{ btc.lookup.gpg.key_mapping[trusted][:-16] }}
+      - {{ btc.lookup.gpg.key_mapping[trusted][-16:] }}
 {%-   else %}
-      - {{ trusted[:-16] }}
+      - {{ trusted[-16:] }}
 {%-   endif %}
 {%- endfor %}
     - keyserver: {{ btc.lookup.gpg.keyserver }}
@@ -90,7 +90,7 @@ Trusted key '{{ trusted }}' is actually present:
 Bitcoin release hashes are verified:
   test.configurable_test_state:
     - name: Check if the downloaded web vault archive has been signed by the author.
-    - changes: False
+    - changes: false
     - result: >
         __slot__:salt:gpg.verify(filename=/tmp/btc-{{ btc.version }}-hashes,
         signature=/tmp/btc-{{ btc.version }}-hashes.asc).res
