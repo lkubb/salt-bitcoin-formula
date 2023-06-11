@@ -2,7 +2,7 @@
 
 {%- set tplroot = tpldir.split("/")[0] %}
 {%- from tplroot ~ "/map.jinja" import mapdata as btc with context %}
-{%- from tplroot ~ "/libtofs.jinja" import files_switch with context %}
+{%- from tplroot ~ "/libtofsstack.jinja" import files_switch with context %}
 
 Bitcoin user/group is present:
   user.present:
@@ -144,9 +144,11 @@ Bitcoin service unit is available:
   file.managed:
     - name: {{ btc.lookup.service.unit.format(name=btc.lookup.service.name) }}
     - source: {{ files_switch(
-                    ["bitcoind.service.j2"],
+                    ["bitcoind.service", "bitcoind.service.j2"],
+                    config=btc,
                     lookup="Bitcoin service unit is available",
-                  ) }}
+                 )
+              }}
     - template: jinja
     - mode: '0644'
     - user: root
