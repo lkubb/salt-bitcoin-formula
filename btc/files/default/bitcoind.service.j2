@@ -1,5 +1,12 @@
 {%- set rw = [] -%}
-
+{%- set startupnotify = ["systemd-notify --ready"] %}
+{%- set shutdownnotify = ["systemd-notify --stopping"] %}
+{%- if "startupnotify" in btc.config %}
+{%-   do startupnotify.append(btc.config.startupnotify) %}
+{%- endif %}
+{%- if "shutdownnotify" in btc.config %}
+{%-   do shutdownnotify.append(btc.config.shutdownnotify) %}
+{%- endif %}
 {%- if btc.lookup.paths.blocks -%}
 {%-   do rw.append(btc.lookup.paths.blocks) -%}
 {%- endif -%}
@@ -23,13 +30,14 @@ Wants=network-online.target
 
 [Service]
 ExecStart={{ btc.lookup.paths.bin | path_join(btc.version | string, 'bin', 'bitcoind') }} \
-                -daemonwait \
                 -pid=/run/bitcoind/bitcoind.pid \
                 -conf='{{ btc.lookup.paths.conf | path_join('bitcoin.conf') }}' \
 {%- if btc.lookup.paths.blocks %}
                 -blocksdir='{{ btc.lookup.paths.blocks }}' \
 {%- endif %}
-                -datadir='{{ btc.lookup.paths.data }}'
+                -datadir='{{ btc.lookup.paths.data }}' \
+                -startupnotify='{{ startupnotify | join("; ") }}' \
+                -shutdownnotify='{{ shutdownnotify | join("; ") }}'
 
 # Make sure the config directory is readable by the service user
 PermissionsStartOnly=true
@@ -38,8 +46,10 @@ ExecStartPre=/bin/chgrp '{{ btc.lookup.group }}' '{{ btc.lookup.paths.conf }}'
 # Process management
 ####################
 
-Type=forking
+Type=notify
+NotifyAccess=all
 PIDFile=/run/bitcoind/bitcoind.pid
+
 Restart=on-failure
 TimeoutStartSec=infinity
 TimeoutStopSec=600
