@@ -8,7 +8,8 @@
 {%   endif %}
 {%- endmacro %}
 
-{%- set scopes = ['main', 'test', 'signet', 'regtest'] -%}
+{%- set scopes = ["main", "test", "signet", "regtest"] -%}
+{%- set sections = ["chain", "core", "debug", "relay", "network", "mining", "rpc", "wallet", "zeromq"] -%}
 
 # Bitcoin configuration file managed by Salt.
 # Manual changes might be overwritten.
@@ -22,11 +23,21 @@
 {%-   endif %}
 {%- endfor %}
 
+{%- for section in sections %}
+{%-   if section in btc.config %}
+
+[{{ section }}]
+{%-     for name, val in btc.config[section].items() %}
+{{ render_opt(name, val) }}
+{%-     endfor %}
+{%-   endif %}
+{%- endfor %}
+
 # These settings are for specific scopes:
 # mainnet, testnet, signet and regtest
 
 {%- for scope in scopes %}
-{%-   if btc.config[scope] is defined %}
+{%-   if scope in btc.config %}
 
 [{{ scope }}]
 {%-     for name, val in btc.config[scope].items() %}
