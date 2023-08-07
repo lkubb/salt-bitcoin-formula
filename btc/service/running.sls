@@ -13,3 +13,4 @@ Bitcoin Core is running:
     - enable: true
     - watch:
       - sls: {{ sls_config_file }}
+      - file: {{ btc.lookup.service.unit.format(name=btc.lookup.service.name) }}
