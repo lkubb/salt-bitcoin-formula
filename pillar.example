@@ -30,8 +30,9 @@ btc:
       - ::1
     rpcport: 8332
     server: 1
-      # This makes the data dir readable by other users, needs wallet disabled.
-    sysperms: 1
+      # This ensures the cookie file can be read by users in the `bitcoin` group.
+      # Can be modified if https://github.com/bitcoin/bitcoin/pull/28167 is merged.
+    startupnotify: chmod g+r /var/lib/bitcoind/.cookie
       # Network-specific configuration should be a mapping. This is for testnet.
     test:
       disablewallet: 0
