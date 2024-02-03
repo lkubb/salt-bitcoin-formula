@@ -94,7 +94,6 @@ btc:
       - ::1
     rpcport: 8332
     server: 1
-    sysperms: 1
     test:
       disablewallet: 0
   trust:

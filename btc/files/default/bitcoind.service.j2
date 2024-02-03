@@ -29,9 +29,9 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart={{ btc.lookup.paths.bin | path_join(btc.version | string, 'bin', 'bitcoind') }} \
+ExecStart={{ btc.lookup.paths.bin | path_join(btc.version | string, "bin", "bitcoind") }} \
                 -pid=/run/bitcoind/bitcoind.pid \
-                -conf='{{ btc.lookup.paths.conf | path_join('bitcoin.conf') }}' \
+                -conf='{{ btc.lookup.paths.conf | path_join("bitcoin.conf") }}' \
 {%- if btc.lookup.paths.blocks %}
                 -blocksdir='{{ btc.lookup.paths.blocks }}' \
 {%- endif %}
@@ -65,7 +65,7 @@ Group={{ btc.lookup.group }}
 RuntimeDirectory=bitcoind
 RuntimeDirectoryMode=0710
 
-{%- if '/etc/bitcoin' == btc.lookup.paths.conf %}
+{%- if btc.lookup.paths.conf == "/etc/bitcoin" %}
 
 # /etc/bitcoin
 ConfigurationDirectory=bitcoin
@@ -75,11 +75,11 @@ ConfigurationDirectoryMode=0710
 ReadOnlyPaths={{ btc.lookup.paths.conf }}
 {%- endif %}
 
-{%- if '/var/lib/bitcoind' == btc.lookup.paths.data %}
+{%- if btc.lookup.paths.data == "/var/lib/bitcoind" %}
 
 # /var/lib/bitcoind
 StateDirectory=bitcoind
-{%-   if btc.config.get('sysperms') | to_bool and btc.config.get('disablewallet') | to_bool %}
+{%-   if btc.config.get("disablewallet") %}
 StateDirectoryMode=0755
 {%-   else %}
 StateDirectoryMode=0710
@@ -90,7 +90,7 @@ StateDirectoryMode=0710
 
 {%- if rw %}
 
-ReadWritePaths={{ rw | join(' ') }}
+ReadWritePaths={{ rw | join(" ") }}
 {%- endif %}
 
 # Hardening measures
