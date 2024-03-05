@@ -19,8 +19,6 @@ Bitcoin paths are absent:
     - names:
       - {{ btc.lookup.paths.bin | path_join(btc.version | string) }}
       - {{ btc.lookup.paths.conf }}
-      - /tmp/btc-{{ btc.version }}-hashes
-      - /tmp/btc-{{ btc.version }}-hashes.asc
       - {{ btc.lookup.service.unit.format(name=btc.lookup.service.name) }}
     - require:
       - sls: {{ sls_config_clean }}
